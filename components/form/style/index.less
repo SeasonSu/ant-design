@@ -4,6 +4,7 @@
 @import '../../button/style/mixin';
 @import '../../grid/style/mixin';
 @import './mixin';
+@import './errorTips';
 
 @form-prefix-cls: ~'@{ant-prefix}-form';
 @form-component-height: @input-height-base;
@@ -61,7 +62,8 @@
 .@{form-prefix-cls}-item {
   label {
     position: relative;
-
+    display: inline-flex;
+    align-items: center;
     > .@{iconfont-css-prefix} {
       font-size: @font-size-base;
       vertical-align: top;

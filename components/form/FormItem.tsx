@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Animate from 'rc-animate';
 import Row from '../grid/row';
 import Col, { ColProps } from '../grid/col';
 import Icon from '../icon';
@@ -11,6 +10,8 @@ import warning from '../_util/warning';
 import { tuple } from '../_util/type';
 import { FIELD_META_PROP, FIELD_DATA_PROP } from './constants';
 import FormContext, { FormContextProps } from './context';
+import Tooltip from '../tooltip';
+import ErrorSvg from './ErrorSvg';
 
 const ValidateStatuses = tuple('success', 'warning', 'error', 'validating', '');
 
@@ -212,25 +213,23 @@ export default class FormItem extends React.Component<FormItemProps, any> {
 
   renderHelp(prefixCls: string) {
     const help = this.getHelpMessage();
-    const children = help ? (
-      <div className={`${prefixCls}-explain`} key="help">
-        {help}
-      </div>
-    ) : null;
-    if (children) {
-      this.helpShow = !!children;
+    if (help) {
+      this.helpShow = !!help;
     }
-    return (
-      <Animate
-        transitionName="show-help"
-        component=""
-        transitionAppear
-        key="help"
-        onEnd={this.onHelpAnimEnd}
+    return help ? (
+      <Tooltip
+        arrowPointAtCenter
+        placement="topLeft"
+        title={(
+          <div className={`${prefixCls}-explain`} key="help">
+            {help}
+          </div>
+        )}
+        overlayClassName={`${prefixCls}-errorTooltip`}
       >
-        {children}
-      </Animate>
-    );
+        <Icon className={`${prefixCls}-errorIcon`} component={ErrorSvg} />
+      </Tooltip>
+    ): ("")
   }
 
   renderExtra(prefixCls: string) {
@@ -242,7 +241,6 @@ export default class FormItem extends React.Component<FormItemProps, any> {
     prefixCls: string,
     c1: React.ReactNode,
     c2: React.ReactNode,
-    c3: React.ReactNode,
   ) {
     const { props } = this;
     const onlyControl = this.getOnlyControl;
@@ -295,7 +293,6 @@ export default class FormItem extends React.Component<FormItemProps, any> {
           {icon}
         </span>
         {c2}
-        {c3}
       </div>
     );
   }
@@ -373,7 +370,7 @@ export default class FormItem extends React.Component<FormItemProps, any> {
                 title={typeof label === 'string' ? label : ''}
                 onClick={this.onLabelClick}
               >
-                {labelChildren}
+                 {this.renderHelp(prefixCls)}{labelChildren}
               </label>
             </Col>
           ) : null;
@@ -391,7 +388,6 @@ export default class FormItem extends React.Component<FormItemProps, any> {
         this.renderValidateWrapper(
           prefixCls,
           children,
-          this.renderHelp(prefixCls),
           this.renderExtra(prefixCls),
         ),
       ),
